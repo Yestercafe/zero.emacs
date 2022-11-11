@@ -40,6 +40,7 @@
 (require 'init-lsp)
 (require 'init-lisp)
 (require 'init-cc)
+(require 'init-haskell)
 
 (load-file (locate-user-emacs-file "local-configs.el"))
 
