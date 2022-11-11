@@ -26,6 +26,7 @@
 
 (require 'init-ace)
 (require 'init-consult)
+(require 'init-counsel)
 (require 'init-undo)
 (require 'init-minibuffer)
 (require 'init-recentf)
@@ -35,7 +36,10 @@
 (require 'init-utils)
 
 (require 'init-company)
+(require 'init-flycheck)
+(require 'init-lsp)
 (require 'init-lisp)
+(require 'init-cc)
 
 (load-file (locate-user-emacs-file "local-configs.el"))
 

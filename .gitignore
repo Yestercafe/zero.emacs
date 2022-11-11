@@ -13,3 +13,4 @@
 /recentf
 .DS_Store
 /local-configs.el
+.lsp*
