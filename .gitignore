@@ -12,3 +12,4 @@
 /transient
 /recentf
 .DS_Store
+/local-configs.el

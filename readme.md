@@ -8,18 +8,32 @@
 
 这个配置的初始可用版本的可能会较晚才能实现，因为我现在也用不上上面说的那些语言，所以抽空更。
 
+## 使用
+
+安装 Emacs（26、27、28），然后克隆配置：
+
+```shell
+cd ~
+git clone https://github.com/Yescafe/.emacs.d
+cd .emacs.d
+cp local-configs.el.template local-configs.el
+```
+
+可以在 `local-configs.el` 中添加本地配置，如字体设置等。
+
+
 ## 如何不破坏本机环境尝试本配置 - 使用 Docker
 
 在当前 Emacs 配置的目录下执行：
 
-```
+```shell
 docker build -t ic-emacs .
 docker run -it ic-emacs
 ```
 
 当然也可以选择与 Docker 容器分享母机的目录，参考：
 
-```
+```shell
 docker run -v $HOME/repos:/root/repos -it ic-emacs
 ```
 

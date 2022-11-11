@@ -1,0 +1,10 @@
+;;; local-configs.el --- Local configs -*- lexical-binding: t -*-
+;;; Commentary:
+
+;; Set your own local configs here, for example, fonts.
+
+;;; Code:
+
+
+
+;;; local-configs.el ends here
