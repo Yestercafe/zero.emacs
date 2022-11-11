@@ -33,7 +33,13 @@ jobs:
         with:
           version: ${{ matrix.emacs-version }}
 
+      - name: prepare
+        working-directory: ${{ github.workspace }}
+        run: |
+          cp local-configs.el.template local-configs.el
+
       - name: test
+        working-directory: ${{ github.workspace }}
         run: |
           export HOME="/home/runner/work/.emacs.d"; \
           emacs -q --batch \

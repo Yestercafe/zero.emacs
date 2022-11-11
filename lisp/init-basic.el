@@ -2,8 +2,12 @@
 ;;; Commentary:
 ;;; Code:
 
-(tool-bar-mode -1)
-(scroll-bar-mode -1)
+
+(if (display-graphic-p)
+    (progn
+      (tool-bar-mode -1)
+      (scroll-bar-mode -1)))
+
 (setq make-backup-files nil)
 (fset 'yes-or-no-p 'y-or-n-p)
 (add-hook 'emacs-lisp-mode-hook 'show-paren-mode)
