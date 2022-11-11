@@ -1,0 +1,14 @@
+*~
+.\#*
+\#*
+/auto-save-list
+/custom.el
+/elpa
+/elpa-*
+/history
+.cache/
+/.uptimes.el
+/projectile-bookmarks.eld
+/transient
+/recentf
+.DS_Store
