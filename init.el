@@ -7,20 +7,11 @@
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (add-to-list 'load-path (expand-file-name "lisp/" user-emacs-directory))
 
-(defun sanityinc/headerise-elisp ()
-  "Add minimal header and footer to an elisp buffer in order to placate flycheck."
-  (interactive)
-  (let ((fname (if (buffer-file-name)
-                   (file-name-nondirectory (buffer-file-name))
-                 (error "This buffer is not visiting a file"))))
-    (save-excursion
-      (goto-char (point-min))
-      (insert ";;; " fname " --- Insert description here -*- lexical-binding: t -*-\n"
-              ";;; Commentary:\n"
-              ";;; Code:\n\n")
-      (goto-char (point-max))
-      (insert ";;; " fname " ends here\n"))))
-
+(let ((normal-gc-cons-threshold (* 20 1024 1024))
+      (init-gc-cons-threshold (* 128 1024 1024)))
+  (setq gc-cons-threshold init-gc-cons-threshold)
+  (add-hook 'emacs-startup-hook
+            (lambda () (setq gc-cons-threshold normal-gc-cons-threshold))))
 
 (defconst *is-a-mac* (eq system-type 'darwin))
 (defconst *is-a-linux* (eq system-type 'gnu/linux))
@@ -29,7 +20,22 @@
 
 (require 'init-package)
 (require 'init-basic)
+
+(require 'init-theme)
+(require 'init-modeline)
+
+(require 'init-ace)
+(require 'init-consult)
+(require 'init-undo)
+(require 'init-minibuffer)
+(require 'init-recentf)
+
+(require 'init-super)
 (require 'init-mac)
+(require 'init-utils)
+
+(require 'init-company)
+(require 'init-lisp)
 
 (load-file (locate-user-emacs-file "local-configs.el"))
 
