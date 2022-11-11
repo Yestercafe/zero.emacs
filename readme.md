@@ -8,3 +8,20 @@
 
 这个配置的初始可用版本的可能会较晚才能实现，因为我现在也用不上上面说的那些语言，所以抽空更。
 
+## Try this config in Docker container
+
+Execute in this directory:
+
+```
+docker build -t ic-emacs .
+docker run -it ic-emacs
+```
+
+And you can share your host directory with the Docker container by using:
+
+```
+docker run -v $HOME/repos:/root/repos -it ic-emacs
+```
+
+The example is mounting your host's `$HOME/repos` on the container's `/root/repos`.
+
