@@ -22,7 +22,7 @@ cp local-configs.el.template local-configs.el
 可以在 `local-configs.el` 中添加本地配置，如字体设置等。
 
 
-## 如何不破坏本机环境尝试本配置 - 使用 Docker
+### 如何不破坏本机环境尝试本配置 - 使用 Docker
 
 在当前 Emacs 配置的目录下执行：
 
@@ -38,4 +38,21 @@ docker run -v $HOME/repos:/root/repos -it ic-emacs
 ```
 
 这个例子是将母机的 `$HOME/repos` 挂载到了容器的 `/root/repos` 上。
+
+
+## 环境
+
+以 macOS 为例。
+
+### Haskell
+
+需要安装 GHCup，然后用 GHCup 安装相应的 haskell-language-server 和 ghc。
+
+```shell
+brew install ghcup
+ghcup install hls
+ghcup install ghc
+```
+
+而后需要确保 `$HOME/.ghcup/bin` 在 Emacs 的 PATH 里。比如在 shell 中启动 Emacs，需要 `$HOME/.ghcup/bin` 在 shell 的 PATH 中；对于 Emacs plus 使用图标启动，需要将 `$HOME/.ghcup/bin` 添加到 `/Applications/Emacs.app/Contents/Info.plist` 的 PATH 中（可搜索 LSEnvironment 或 PATH）。
 
