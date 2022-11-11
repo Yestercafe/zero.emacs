@@ -8,20 +8,20 @@
 
 这个配置的初始可用版本的可能会较晚才能实现，因为我现在也用不上上面说的那些语言，所以抽空更。
 
-## Try this config in Docker container
+## 如何不破坏本机环境尝试本配置 - 使用 Docker
 
-Execute in this directory:
+在当前 Emacs 配置的目录下执行：
 
 ```
 docker build -t ic-emacs .
 docker run -it ic-emacs
 ```
 
-And you can share your host directory with the Docker container by using:
+当然也可以选择与 Docker 容器分享母机的目录，参考：
 
 ```
 docker run -v $HOME/repos:/root/repos -it ic-emacs
 ```
 
-The example is mounting your host's `$HOME/repos` on the container's `/root/repos`.
+这个例子是将母机的 `$HOME/repos` 挂载到了容器的 `/root/repos` 上。
 
