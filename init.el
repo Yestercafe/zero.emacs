@@ -27,7 +27,6 @@
 (defconst *is-a-windows* (or (eq system-type 'windows-nt)
 			(eq system-type 'cygwin)))
 
-(require 'init-proxy)
 (require 'init-package)
 (require 'init-basic)
 (require 'init-mac)
