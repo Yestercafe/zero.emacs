@@ -14,3 +14,4 @@
 .DS_Store
 /local-configs.el
 .lsp*
+/projects
