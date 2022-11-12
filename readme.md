@@ -1,4 +1,6 @@
-# .emacs.d
+# .emacs.d (Under development)
+
+[![CI](https://github.com/Yescafe/.emacs.d/workflows/CI/badge.svg?branch=main)](https://github.com/Yescafe/.emacs.d/actions)
 
 ## 前言
 
