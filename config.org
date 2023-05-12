@@ -1,0 +1,507 @@
+* Basic
+** UI Settings
+Do not show the startup screen and tool bar. Make the Emacs GUI window maximized.
+#+begin_src emacs-lisp
+  (setq inhibit-startup-screen t)
+  (if (display-graphic-p)
+      (progn
+	(tool-bar-mode -1)
+	(scroll-bar-mode -1)
+	(toggle-frame-maximized)))
+#+end_src
+
+** Chores
+#+begin_src emacs-lisp
+  ;; no backup files
+  (setq make-backup-files nil
+	backup-inhibited t
+	auto-save-default nil
+	auto-save-list-file-prefix nil)
+  ;; switch yes/no options to y/n options
+  (fset 'yes-or-no-p 'y-or-n-p)
+  ;; no bell
+  (setq ring-bell-function 'ignore)
+
+  ;; highlight the editing line
+  (global-hl-line-mode 1)
+
+  ;; show relative line number
+  (setq display-line-numbers-type 'relative)
+  (global-display-line-numbers-mode)
+
+  ;; highlight paired parenthesis in emacs-lisp-mode
+  (add-hook 'emacs-lisp-mode-hook 'show-paren-mode)
+
+  ;; Delete Selection mode lets you treat an Emacs region.
+  ;; https://www.emacswiki.org/emacs/DeleteSelectionMode
+  (delete-selection-mode 1)
+
+  (global-set-key (kbd "S-<f5>") 'restart-emacs)
+  (global-set-key (kbd "C-.") 'set-mark-command)
+#+end_src
+
+** Font:
+Set font.
+#+begin_src emacs-lisp
+  (set-frame-font "FiraCode Nerd Font-14")
+  (setq default-frame-alist '((font . "FiraCode Nerd Font-14")))
+#+end_src
+
+* Utils
+#+begin_src emacs-lisp
+  (defconst *mac* (eq system-type 'darwin))
+#+end_src
+
+* Package Manager
+** Use USTC source
+#+begin_src emacs-lisp
+  (setq package-archives '(("gnu" . "http://mirrors.ustc.edu.cn/elpa/gnu/")
+			   ("melpa" . "http://mirrors.ustc.edu.cn/elpa/melpa/")
+			   ("melpa-stable" . "http://mirrors.ustc.edu.cn/elpa/melpa-stable/")
+			   ("org" . "http://mirrors.ustc.edu.cn/elpa/org/")))
+#+end_src
+
+** Initialize package
+#+begin_src emacs-lisp
+  (setq package-enable-at-startup nil)
+  (unless (bound-and-true-p packge--initialized)
+    (package-initialize))
+#+end_src
+
+** Install use-package
+#+begin_src emacs-lisp
+  (unless (package-installed-p 'use-package)
+    (package-refresh-contents)
+    (package-install 'use-package))
+#+end_src
+
+* Tools
+** Theme
+Set colorscheme:
+#+begin_src emacs-lisp
+  (setq custom-safe-themes t)
+  (use-package spacemacs-theme :ensure t)
+  (use-package color-theme-sanityinc-tomorrow :ensure t)
+  (load-theme 'sanityinc-tomorrow-bright)
+#+end_src
+
+** Wakatime
+#+begin_src emacs-lisp
+  (use-package wakatime-mode
+    :ensure t
+    :init (global-wakatime-mode))
+#+end_src
+
+** Dash
+#+begin_src emacs-lisp
+  (when *mac*
+    (use-package dash-at-point
+      :ensure t)
+    (define-key global-map (kbd "C-c d") 'dash-at-point))
+#+end_src
+
+** Ace
+A window manager instead of the Emacs featureless one.
+#+begin_src emacs-lisp
+  (use-package ace-window
+    :ensure t
+    :bind
+    (([remap other-window] . 'ace-window))
+    :init
+    (custom-set-faces
+     '(aw-leading-char-face
+       ((t (:interit ace-jump-face-foreground :height 3.0))))))
+#+end_src
+
+** Ivy, Counsel, Swiper
+A swiper menu for completion.
+#+begin_src emacs-lisp
+  ;; ivy for completion
+  (use-package ivy
+    :ensure t
+    :init
+    (ivy-mode))
+  ;; counsel is a extension of ivy
+  (use-package counsel
+    :ensure t
+    :init
+    (counsel-mode))
+  ;; swiper for in-file search
+  (use-package swiper
+    :ensure t
+    :bind
+    ;; remap C-s to swiper
+    (("C-s" . 'swiper)))
+
+  ;; extensions (incomplete)
+  (use-package vertico
+    :ensure t
+    :init (vertico-mode))
+  (use-package orderless
+    :ensure t
+    :custom
+    (completion-styles '(orderless basic))
+    (completion-category-overrides '((file (styles basic partial-completion)))))
+  (use-package savehist
+    :init
+    (savehist-mode))
+
+  ;; https://github.com/minad/vertico#configuration
+  ;; A few more useful configurations...
+  (use-package emacs
+    :init
+    ;; Add prompt indicator to `completing-read-multiple'.
+    ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
+    (defun crm-indicator (args)
+      (cons (format "[CRM%s] %s"
+		    (replace-regexp-in-string
+		     "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
+		     crm-separator)
+		    (car args))
+	    (cdr args)))
+    (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+
+    ;; Do not allow the cursor in the minibuffer prompt
+    (setq minibuffer-prompt-properties
+	  '(read-only t cursor-intangible t face minibuffer-prompt))
+    (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
+
+    ;; Emacs 28: Hide commands in M-x which do not work in the current mode.
+    ;; Vertico commands are hidden in normal buffers.
+    ;; (setq read-extended-command-predicate
+    ;;       #'command-completion-default-include-p)
+
+    ;; Enable recursive minibuffers
+    (setq enable-recursive-minibuffers t))
+
+  ;; minibuffer annotations
+  (use-package marginalia
+    :ensure t
+    :init (marginalia-mode)
+    :bind
+    (("M-A" . marginalia-cycle)
+     :map minibuffer-local-map
+     ("M-A" . marginalia-cycle)))
+#+end_src
+
+** Spaceline
+#+begin_src emacs-lisp
+  (use-package spaceline
+    :ensure t
+    :init
+    ;; battery display
+    (use-package fancy-battery
+      :ensure t
+      :init
+      (setq fancy-battery-show-percentage t)
+      (fancy-battery-mode))
+
+    ;; a rainbow cat indicate the position of this buffer on the cursor
+    (use-package nyan-mode
+      :ensure t
+      :init
+      (setq nyan-animate-nyancat t)
+      (setq nyan-wavy-trail t)
+      (setq nyan-minimum-window-width 60)
+      (setq nyan-bar-length 10)
+      (nyan-mode))
+
+    ;; show time on the spaceline
+    (setq display-time-string-forms
+	  '(dayname " " month "/" day " " 24-hours ":" minutes " "))
+    (display-time-mode)
+
+    ;; spaceline spacemacs theme
+    (spaceline-spacemacs-theme)
+    ;; for evil-mode?
+    ;; (setq spaceline-highlight-face-func 'spaceline-highlight-face-evil-state)
+
+    ;; flycheck extensions
+    (spaceline-toggle-flycheck-error-off)
+    (spaceline-toggle-flycheck-warning-off)
+    (spaceline-toggle-flycheck-info-off)
+
+    ;; chores
+    (spaceline-toggle-minor-modes-on)
+    (spaceline-toggle-version-control-on)
+    (spaceline-toggle-line-column-on)
+    (spaceline-toggle-battery-on)
+    (spaceline-toggle-input-method-on)
+    (spaceline-toggle-buffer-size-off)
+    (spaceline-toggle-buffer-position-off)
+    ;; global on for time display
+    (spaceline-toggle-global-on)
+
+    :bind
+    (("C-c t l m" . 'spaceline-toggle-minor-modes)
+     ("C-c t l b" . 'spaceline-toggle-battery)
+     ("C-c t l n" . 'spaceline-toggle-nyan-cat)))
+#+end_src
+
+** Flycheck
+#+begin_src emacs-lisp
+  (use-package flycheck
+    :ensure t)
+#+end_src
+
+** Company
+#+begin_src emacs-lisp
+  (use-package company
+    :ensure t
+    :diminish (company-mode " Cmp.")
+    :defines (company-dabbrev-ignore-case company-dabbrev-downcase)
+    :hook (after-init . global-company-mode)
+    :bind (:map company-active-map
+		(("C-n" . company-select-next)
+		 ("C-p" . company-select-previous)
+		 ("C-d" . company-show-doc-buffer)
+		 ("<tab>" . company-complete)
+		 ("M-." . company-show-location)
+		 ("M-/" . company-other-backend)))
+    :config (setq company-dabbrev-code-everywhere t
+		  company-dabbrev-code-modes t
+		  company-dabbrev-code-other-buffers 'all
+		  company-dabbrev-downcase nil
+		  company-dabbrev-ignore-case t
+		  company-dabbrev-other-buffers 'all
+		  company-require-match nil
+		  company-minimum-prefix-length 1
+		  company-show-numbers nil
+		  company-tooltip-limit 10
+		  company-idle-delay 0
+		  company-echo-delay 0
+		  company-tooltip-offset-display 'scrollbar
+		  company-begin-commands '(self-insert-command))
+    (eval-after-load 'company
+      '(add-to-list 'company-backends
+		    '(company-abbrev company-yasnippet company-capf))))
+
+  ;; better sorting and filtering
+  (use-package company-prescient
+    :ensure t
+    :init (company-prescient-mode 1))
+
+  (use-package company-prescient
+    :ensure t
+    :init (company-prescient-mode 1))
+#+end_src
+
+** Editing
+#+begin_src emacs-lisp
+  ;; autopair parenthesis
+  (electric-pair-mode 1)
+
+  ;; rainbow delimiters
+  (use-package rainbow-delimiters
+    :ensure
+    :hook (prog-mode . rainbow-delimiters-mode))
+
+  ;; undo tree
+  (use-package undo-tree
+    :ensure t
+    :init
+    (global-undo-tree-mode)
+    :bind
+    (("C-/" . undo-tree-undo)
+     ("C-?" . undo-tree-redo)
+     ("C-x u" . undo-tree-visualize)
+     :map undo-tree-map
+     ;; ("C-x r u" . nil)
+     ;; ("C-x r U" . nil)
+     ("C-x r" . nil)))
+#+end_src
+
+** Which key
+#+begin_src emacs-lisp
+  (use-package which-key
+    :ensure t
+    :init
+    (which-key-mode)
+    (setq which-key-show-early-on-C-h t)
+    (setq which-key-idle-delay 0.5))
+#+end_src
+
+** LSP
+#+begin_src emacs-lisp
+  (use-package lsp-mode
+    :ensure t
+    :commands (lsp lsp-deferred)
+    :hook ((lsp-mode . lsp-enable-which-key-integrateion)
+	   (prog-mode . (lambda ()
+			  (unless (derived-mode-p 'emacs-lisp-mode 'lsp-mode)
+			    (lsp-deferred)))))
+    :init
+    (setq lsp-keepspace-alive nil
+	  lsp-enable-indentation t
+	  lsp-auto-guess-root t
+	  lsp-enable-snippet t
+	  ;; lsp flycheck
+	  lsp-prefer-flymake t
+	  ;; completion backend provider
+	  lsp-prefer-capf t
+	  lsp-completion-provider :capf
+	  lsp-idle-delay 0.5
+	  read-process-output-max (* 1024 1024)))
+
+  (use-package lsp-ui
+    :ensure t
+    :after lsp-mode
+    :commands lsp-ui-mode
+    :hook ((lsp-mode . lsp-ui-mode))
+    :init
+    (setq
+     ;; https://github.com/emacs-lsp/lsp-ui
+     lsp-ui-sideline-show-diagnostics t
+     lsp-ui-sideline-show-hover t
+     lsp-ui-sideline-show-code-actions t
+     lsp-ui-sideline-delay 1
+     lsp-ui-peek-enable t
+     lsp-ui-doc-enable t
+     lsp-ui-doc-delay 0.5
+     lsp-ui-doc-position 'at-point
+     lsp-ui-imenu-enable t
+     lsp-ui-imenu-kind-posiont 'top
+     lsp-ui-imenu-buffer-postion 'right
+     lsp-ui-imenu-auto-refresh t)
+    :config
+    (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
+    (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
+    :bind
+    (("C-c m" . 'lsp-ui-imenu))
+    )
+
+  (use-package lsp-ivy
+      :ensure t
+      :commands lsp-ivy-workspace-symbol
+      :bind
+      (("C-c s" . 'lsp-ivy-workspace-symbol)))
+
+  (use-package lsp-treemacs
+    :ensure t
+    :commands lsp-treemacs-errors-list
+    :init
+    (when (display-graphic-p)
+      (treemacs-resize-icons 14))
+    :bind
+    (("C-c e" . 'lsp-treemacs-errors-list)))
+#+end_src
+
+** Treemacs
+Pending. I don't know how to use this now.
+#+begin_src emacs-lisp
+  (use-package treemacs
+    :ensure t
+    :bind
+    (("C-c t p" . 'treemacs)))
+#+end_src
+
+** Consult
+An alternative swiper. Use its navigations.
+#+begin_src emacs-lisp
+  (use-package consult
+    :ensure t
+    :init
+    (recentf-mode)
+    :bind
+    (:map global-map
+     ("C-c o g" . 'consult-goto-line)
+     ("C-c o m" . 'consult-mark)
+     ("C-c o M" . 'consult-global-mark)
+     ("C-c o o" . 'consult-global-outline)
+     ("C-c o c" . 'consult-imenu)
+     ("C-c o C" . 'consult-imenu-multi)
+     ("C-x r" . 'recentf)
+     ("C-x y" . 'consult-yank-from-kill-ring)))
+#+end_src
+
+** Magit
+A nice git plugin.
+#+begin_src emacs-lisp
+  (use-package magit
+    :ensure t)
+#+end_src
+
+** Apheleia
+Code formatter while saving.
+#+begin_src emacs-lisp
+  (use-package apheleia
+    :ensure t
+    :bind
+    (("C-c t f" . 'apheleia-global-mode))
+    :init
+    ;; default turn off
+    (apheleia-global-mode -1))
+#+end_src
+
+** Vterm toggle
+#+begin_src emacs-lisp
+  (use-package vterm-toggle
+    :ensure t
+    :bind
+    (("<f1>" . 'vterm-toggle)
+     :map vterm-mode-map
+     ("<f1>" . 'vterm-toggle)
+     ("C-<f1>" . 'vterm-toggle-cd))
+    :init
+    (add-hook 'vterm-mode-hook (lambda ()
+				 (display-line-numbers-mode -1))))
+#+end_src
+
+* Modes
+** org-mode
+*** keymaps
+#+begin_src emacs-lisp
+  (define-key global-map (kbd "C-c a") 'org-agenda)
+#+end_src
+
+** dired-mode
+Advanced dired-mode.
+#+begin_src emacs-lisp
+  (use-package all-the-icons
+    :ensure t)
+  (use-package all-the-icons-dired
+    :ensure t
+    :init
+    (when *mac*
+      (setq dired-use-ls-dired t
+	    insert-directory-program "/usr/local/bin/gls"
+	    dired-listing-switches "-aBhl --group-directories-first"))
+    (setq all-the-icons-dired-monochrome nil)
+    (add-hook 'dired-mode-hook 'all-the-icons-dired-mode))
+#+end_src
+
+* Languages
+** Coq
+#+begin_src emacs-lisp
+  (use-package proof-general
+    :ensure t
+    :init
+    (setq proof-splash-seen t)
+    (require 'lsp-mode)
+    (add-to-list 'lsp-language-id-configuration '(coq-mode . "coq"))
+    (setq lsp-warn-no-matched-clients nil))
+
+  (use-package company-coq
+    :ensure t
+    :init (add-hook 'coq-mode-hook #'company-coq-mode))
+#+end_src
+
+** Haskell
+#+begin_src emacs-lisp
+  (use-package haskell-mode
+    :ensure t)
+
+  (use-package lsp-haskell
+    :ensure t
+    :after (lsp-mode)
+    :init
+    (add-hook 'haskell-mode-hook #'lsp)
+    (add-hook 'haskell-literate-mode-hook #'lsp))
+#+end_src
+
+** Agda
+#+begin_src emacs-lisp
+  (load-file (let ((coding-system-for-read 'utf-8))
+	       (shell-command-to-string "agda-mode locate")))
+#+end_src
+
