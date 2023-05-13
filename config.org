@@ -447,6 +447,21 @@ Code formatter while saving.
 				 (display-line-numbers-mode -1))))
 #+end_src
 
+** Projectile
+Project manager. Incomplete.
+#+begin_src emacs-lisp
+  (use-package projectile
+    :ensure t)
+#+end_src
+
+** Yasnippet
+#+begin_src emacs-lisp
+  (use-package yasnippet
+    :ensure t
+    :init
+    (yas-global-mode 1))
+#+end_src
+
 * Modes
 ** org-mode
 *** keymaps
