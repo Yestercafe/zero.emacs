@@ -118,6 +118,13 @@ Set colorscheme:
     :init (global-wakatime-mode))
 #+end_src
 
+** Keycast
+I will only use =keycast-log-mode= to list recent key bindings I used.
+#+begin_src emacs-lisp
+  (use-package keycast
+    :ensure t)
+#+end_src
+
 ** Dash
 #+begin_src emacs-lisp
   (when *mac*
