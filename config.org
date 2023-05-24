@@ -3,11 +3,9 @@
 Do not show the startup screen and tool bar. Make the Emacs GUI window maximized.
 #+begin_src emacs-lisp
   (setq inhibit-startup-screen t)
-  (if (display-graphic-p)
-      (progn
-	(tool-bar-mode -1)
-	(scroll-bar-mode -1)
-	(toggle-frame-maximized)))
+  (tool-bar-mode -1)
+  (scroll-bar-mode -1)
+  (toggle-frame-maximized)
 #+end_src
 
 ** Chores
@@ -52,6 +50,23 @@ Set font.
   (defconst *mac* (eq system-type 'darwin))
 #+end_src
 
+* Emacs Client
+#+begin_src emacs-lisp
+  (when *mac*
+    (when (featurep 'ns)
+      (defun ns-raise-emacs ()
+	"Raise Emacs."
+	(ns-do-applescript "tell application \"Emacs\" to activate"))
+      (defun ns-raise-emacs-with-frame (frame)
+	"Raise Emacs and select the provided frame."
+	(with-selected-frame frame
+	  (when (display-graphic-p)
+	    (ns-raise-emacs))))
+      (add-hook 'after-make-frame-functions 'ns-raise-emacs-with-frame)
+      (when (display-graphic-p)
+	(ns-raise-emacs))))
+#+end_src
+
 * Package Manager
 ** Use USTC source
 #+begin_src emacs-lisp
@@ -76,13 +91,24 @@ Set font.
 #+end_src
 
 * Tools
+** System PATH
+#+begin_src emacs-lisp
+  (use-package exec-path-from-shell
+    :ensure t)
+  (when (memq window-system '(mac ns x))
+    (exec-path-from-shell-initialize))
+  (when (daemonp)
+    (exec-path-from-shell-initialize)
+    (scroll-bar-mode -1))
+#+end_src
+
 ** Theme
 Set colorscheme:
 #+begin_src emacs-lisp
   (setq custom-safe-themes t)
   (use-package spacemacs-theme :ensure t)
   (use-package color-theme-sanityinc-tomorrow :ensure t)
-  (load-theme 'sanityinc-tomorrow-bright)
+  (load-theme 'sanityinc-tomorrow-day)
 #+end_src
 
 ** Wakatime
@@ -113,30 +139,13 @@ A window manager instead of the Emacs featureless one.
        ((t (:interit ace-jump-face-foreground :height 3.0))))))
 #+end_src
 
-** Ivy, Counsel, Swiper
-A swiper menu for completion.
+** Vertico, orderless, marginalia
+Instead of ivy/counsel/swiper.
 #+begin_src emacs-lisp
-  ;; ivy for completion
-  (use-package ivy
-    :ensure t
-    :init
-    (ivy-mode))
-  ;; counsel is a extension of ivy
-  (use-package counsel
-    :ensure t
-    :init
-    (counsel-mode))
-  ;; swiper for in-file search
-  (use-package swiper
-    :ensure t
-    :bind
-    ;; remap C-s to swiper
-    (("C-s" . 'swiper)))
-
   ;; extensions (incomplete)
   (use-package vertico
     :ensure t
-    :init (vertico-mode))
+    :init (vertico-mode t))
   (use-package orderless
     :ensure t
     :custom
@@ -174,10 +183,17 @@ A swiper menu for completion.
     ;; Enable recursive minibuffers
     (setq enable-recursive-minibuffers t))
 
+  ;; adaptive context menu
+  (use-package embark
+    :ensure t
+    :bind ("C-;" . 'embark-act)
+    :custom
+    (prefix-help-command . embark-prefix-help-command))
+
   ;; minibuffer annotations
   (use-package marginalia
     :ensure t
-    :init (marginalia-mode)
+    :init (marginalia-mode t)
     :bind
     (("M-A" . marginalia-cycle)
      :map minibuffer-local-map
@@ -222,13 +238,14 @@ A swiper menu for completion.
     (spaceline-toggle-flycheck-info-off)
 
     ;; chores
-    (spaceline-toggle-minor-modes-on)
+    (spaceline-toggle-minor-modes-off)
     (spaceline-toggle-version-control-on)
     (spaceline-toggle-line-column-on)
     (spaceline-toggle-battery-on)
     (spaceline-toggle-input-method-on)
     (spaceline-toggle-buffer-size-off)
     (spaceline-toggle-buffer-position-off)
+    (spaceline-toggle-hud-off)
     ;; global on for time display
     (spaceline-toggle-global-on)
 
@@ -404,6 +421,7 @@ An alternative swiper. Use its navigations.
     (recentf-mode)
     :bind
     (:map global-map
+     ("C-s" . 'consult-line)
      ("C-c o g" . 'consult-goto-line)
      ("C-c o m" . 'consult-mark)
      ("C-c o M" . 'consult-global-mark)
@@ -494,7 +512,12 @@ Advanced dired-mode.
     (setq proof-splash-seen t)
     (require 'lsp-mode)
     (add-to-list 'lsp-language-id-configuration '(coq-mode . "coq"))
-    (setq lsp-warn-no-matched-clients nil))
+    (setq lsp-warn-no-matched-clients nil)
+    :bind
+    (:map coq-mode-map
+     ("C-c a" . coq-Search))
+    :hook
+    (coq-mode . undo-tree-mode))
 
   (use-package company-coq
     :ensure t
