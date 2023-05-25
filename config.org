@@ -1,4 +1,4 @@
-* Basic
+q* Basic
 ** UI Settings
 Do not show the startup screen and tool bar. Make the Emacs GUI window maximized.
 #+begin_src emacs-lisp
@@ -209,13 +209,6 @@ Instead of ivy/counsel/swiper.
 
     ;; Enable recursive minibuffers
     (setq enable-recursive-minibuffers t))
-
-  ;; adaptive context menu
-  (use-package embark
-    :ensure t
-    :bind ("C-;" . 'embark-act)
-    :custom
-    (prefix-help-command . embark-prefix-help-command))
 
   ;; minibuffer annotations
   (use-package marginalia
@@ -511,7 +504,7 @@ Project manager. Incomplete.
 ** org-mode
 *** keymaps
 #+begin_src emacs-lisp
-  (define-key global-map (kbd "C-c a") 'org-agenda)
+  (define-key org-mode-map (kbd "C-c a") 'org-agenda)
 #+end_src
 
 ** dired-mode
@@ -540,9 +533,6 @@ Advanced dired-mode.
     (require 'lsp-mode)
     (add-to-list 'lsp-language-id-configuration '(coq-mode . "coq"))
     (setq lsp-warn-no-matched-clients nil)
-    :bind
-    (:map coq-mode-map
-     ("C-c a" . coq-Search))
     :hook
     (coq-mode . undo-tree-mode))
 
