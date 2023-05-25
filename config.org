@@ -108,7 +108,27 @@ Set colorscheme:
   (setq custom-safe-themes t)
   (use-package spacemacs-theme :ensure t)
   (use-package color-theme-sanityinc-tomorrow :ensure t)
-  (load-theme 'sanityinc-tomorrow-day)
+
+  (defun light-on ()
+    (interactive)
+    (setq light-on-or-off 1)
+    (color-theme-sanityinc-tomorrow-day)
+    (spaceline-spacemacs-theme))
+  (defun light-off ()
+    (interactive)
+    (setq light-on-or-off -1)
+    (color-theme-sanityinc-tomorrow-night)
+    (spaceline-spacemacs-theme))
+
+  (defun toggle-light ()
+    (interactive)
+    (if (> light-on-or-off 0)
+	(light-off)
+	(light-on)))
+
+  (light-on)
+  
+  (global-set-key (kbd "C-c t t") 'toggle-light)
 #+end_src
 
 ** Wakatime
