@@ -539,6 +539,11 @@ Advanced dired-mode.
   (use-package company-coq
     :ensure t
     :init (add-hook 'coq-mode-hook #'company-coq-mode))
+
+  ;; there is no coq-mode-map before activating coq-mode
+  (add-hook 'coq-mode-hook (lambda ()
+			    (define-key coq-mode-map (kbd "C-c a") 'coq-Search)
+			    (define-key coq-mode-map (kbd "s-<return>") 'proof-goto-point)))
 #+end_src
 
 ** Haskell
