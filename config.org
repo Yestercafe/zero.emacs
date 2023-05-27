@@ -1,4 +1,4 @@
-q* Basic
+* Basic
 ** UI Settings
 Do not show the startup screen and tool bar. Make the Emacs GUI window maximized.
 #+begin_src emacs-lisp
@@ -126,8 +126,6 @@ Set colorscheme:
 	(light-off)
 	(light-on)))
 
-  (light-on)
-  
   (global-set-key (kbd "C-c t t") 'toggle-light)
 #+end_src
 
@@ -273,6 +271,8 @@ Instead of ivy/counsel/swiper.
     (("C-c t l m" . 'spaceline-toggle-minor-modes)
      ("C-c t l b" . 'spaceline-toggle-battery)
      ("C-c t l n" . 'spaceline-toggle-nyan-cat)))
+
+  (light-on)
 #+end_src
 
 ** Flycheck
