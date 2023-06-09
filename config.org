@@ -35,7 +35,9 @@ Do not show the startup screen and tool bar. Make the Emacs GUI window maximized
   (delete-selection-mode 1)
 
   (global-set-key (kbd "S-<f5>") 'restart-emacs)
-  (global-set-key (kbd "C-.") 'set-mark-command)
+  (global-set-key (kbd "M-.") 'set-mark-command)
+
+  (setq-default tab-width 4)
 #+end_src
 
 ** Font:
@@ -563,5 +565,17 @@ Advanced dired-mode.
 #+begin_src emacs-lisp
   (load-file (let ((coding-system-for-read 'utf-8))
 	       (shell-command-to-string "agda-mode locate")))
+#+end_src
+
+** Go
+#+begin_src emacs-lisp
+  (use-package go-mode
+    :ensure t
+    :init
+    (add-hook 'go-mode-hook #'lsp)
+    (add-hook 'go-mode-hook
+	  (lambda ()
+	    (setq indent-tabs-mode 1)
+	    (setq tab-width 4))))
 #+end_src
 
