@@ -40,13 +40,6 @@ Do not show the startup screen and tool bar. Make the Emacs GUI window maximized
   (setq-default tab-width 4)
 #+end_src
 
-** Font:
-Set font.
-#+begin_src emacs-lisp
-  (set-frame-font "FiraCode Nerd Font-14")
-  (setq default-frame-alist '((font . "FiraCode Nerd Font-14")))
-#+end_src
-
 * Utils
 #+begin_src emacs-lisp
   (defconst *mac* (eq system-type 'darwin))
@@ -102,6 +95,36 @@ Set font.
   (when (daemonp)
     (exec-path-from-shell-initialize)
     (scroll-bar-mode -1))
+#+end_src
+
+** Fonts
+#+begin_src emacs-lisp
+  (use-package font-utils
+	:ensure t)
+  (use-package ucs-utils
+	:ensure t)
+  (use-package list-utils
+	:ensure t)
+
+  (set-face-attribute 'default nil
+					  :family "Monaco"
+					  :height 140)
+  (set-frame-font "Monaco-14")
+  (setq default-frame-alist '((font . "Monaco-14")))
+
+  (use-package unicode-fonts
+	:ensure t
+	:init (unicode-fonts-setup))
+
+  (defun unicode-fonts-setup-h (frame)
+	"Run unicode-fonts-setup, then remove the hook."
+	(progn
+	  (select-frame frame)
+	  (unicode-fonts-setup)
+	  (message "Removing unicode-fonts-setup to after-make-frame-functions hook")
+	  (remove-hook 'after-make-frame-functions 'unicode-fonts-setup-h)
+	  ))
+  (add-hook 'after-make-frame-functions 'unicode-fonts-setup-h nil)
 #+end_src
 
 ** Theme
