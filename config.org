@@ -107,10 +107,10 @@ Do not show the startup screen and tool bar. Make the Emacs GUI window maximized
 	:ensure t)
 
   (set-face-attribute 'default nil
-					  :family "Monaco"
+					  :family "SFMono Nerd Font"
 					  :height 140)
-  (set-frame-font "Monaco-14")
-  (setq default-frame-alist '((font . "Monaco-14")))
+  (set-frame-font "SFMono Nerd Font-14")
+  (setq default-frame-alist '((font . "SFMono Nerd Font-14")))
 
   (use-package unicode-fonts
 	:ensure t
@@ -246,81 +246,86 @@ Instead of ivy/counsel/swiper.
 ** Spaceline
 #+begin_src emacs-lisp
   (use-package spaceline
-    :ensure t
-    :init
-    ;; battery display
-    (use-package fancy-battery
-      :ensure t
-      :init
-      (setq fancy-battery-show-percentage t)
-      (fancy-battery-mode))
+	:ensure t
+	:init
+	;; battery display
+	(use-package fancy-battery
+	  :ensure t
+	  :init
+	  (setq fancy-battery-show-percentage t)
+	  (fancy-battery-mode))
 
-    ;; a rainbow cat indicate the position of this buffer on the cursor
-    (use-package nyan-mode
-      :ensure t
-      :init
-      (setq nyan-animate-nyancat t)
-      (setq nyan-wavy-trail t)
-      (setq nyan-minimum-window-width 60)
-      (setq nyan-bar-length 10)
-      (nyan-mode))
+	;; a rainbow cat indicate the position of this buffer on the cursor
+	(use-package nyan-mode
+	  :ensure t
+	  :init
+	  (setq nyan-animate-nyancat t)
+	  (setq nyan-wavy-trail t)
+	  (setq nyan-minimum-window-width 60)
+	  (setq nyan-bar-length 10)
+	  (nyan-mode))
 
-    ;; show time on the spaceline
-    (setq display-time-string-forms
+	;; show time on the spaceline
+	(setq display-time-string-forms
 	  '(dayname " " month "/" day " " 24-hours ":" minutes " "))
-    (display-time-mode)
+	(display-time-mode)
 
-    ;; spaceline spacemacs theme
-    (spaceline-spacemacs-theme)
-    ;; for evil-mode?
-    ;; (setq spaceline-highlight-face-func 'spaceline-highlight-face-evil-state)
+	;; spaceline spacemacs theme
+	(spaceline-spacemacs-theme)
+	;; for evil-mode?
+	;; (setq spaceline-highlight-face-func 'spaceline-highlight-face-evil-state)
 
-    ;; flycheck extensions
-    (spaceline-toggle-flycheck-error-off)
-    (spaceline-toggle-flycheck-warning-off)
-    (spaceline-toggle-flycheck-info-off)
+	;; flycheck extensions
+	(spaceline-toggle-flycheck-error-off)
+	(spaceline-toggle-flycheck-warning-off)
+	(spaceline-toggle-flycheck-info-off)
 
-    ;; chores
-    (spaceline-toggle-minor-modes-off)
-    (spaceline-toggle-version-control-on)
-    (spaceline-toggle-line-column-on)
-    (spaceline-toggle-battery-on)
-    (spaceline-toggle-input-method-on)
-    (spaceline-toggle-buffer-size-off)
-    (spaceline-toggle-buffer-position-off)
-    (spaceline-toggle-hud-off)
-    ;; global on for time display
-    (spaceline-toggle-global-on)
+	;; chores
+	(spaceline-toggle-minor-modes-off)
+	(spaceline-toggle-version-control-on)
+	(spaceline-toggle-line-column-on)
+	(spaceline-toggle-battery-on)
+	(spaceline-toggle-input-method-on)
+	(spaceline-toggle-buffer-size-off)
+	(spaceline-toggle-buffer-position-off)
+	(spaceline-toggle-hud-off)
+	;; global on for time display
+	(spaceline-toggle-global-on)
 
-    :bind
-    (("C-c t l m" . 'spaceline-toggle-minor-modes)
-     ("C-c t l b" . 'spaceline-toggle-battery)
-     ("C-c t l n" . 'spaceline-toggle-nyan-cat)))
+	:bind
+	(("C-c t l m" . 'spaceline-toggle-minor-modes)
+	 ("C-c t l b" . 'spaceline-toggle-battery)
+	 ("C-c t l n" . 'spaceline-toggle-nyan-cat)))
 
-  (light-on)
+  ;; light is off by default
+  (light-off)
 #+end_src
 
 ** Flycheck
 #+begin_src emacs-lisp
   (use-package flycheck
-    :ensure t)
+	:ensure t)
+  (use-package flycheck-rust
+	:ensure t)
 #+end_src
 
 ** Company
 #+begin_src emacs-lisp
   (use-package company
-    :ensure t
-    :diminish (company-mode " Cmp.")
-    :defines (company-dabbrev-ignore-case company-dabbrev-downcase)
-    :hook (after-init . global-company-mode)
-    :bind (:map company-active-map
+	:ensure t
+	:diminish (company-mode " Cmp.")
+	:defines (company-dabbrev-ignore-case company-dabbrev-downcase)
+	:hook (after-init . global-company-mode)
+	:bind (:map company-active-map
 		(("C-n" . company-select-next)
 		 ("C-p" . company-select-previous)
+		 ("C-<" . company-select-first)
+		 ("C->" . company-select-last)
 		 ("C-d" . company-show-doc-buffer)
 		 ("<tab>" . company-complete)
 		 ("M-." . company-show-location)
 		 ("M-/" . company-other-backend)))
-    :config (setq company-dabbrev-code-everywhere t
+	:config (setq company-dabbrev-code-everywhere t
 		  company-dabbrev-code-modes t
 		  company-dabbrev-code-other-buffers 'all
 		  company-dabbrev-downcase nil
@@ -334,18 +339,18 @@ Instead of ivy/counsel/swiper.
 		  company-echo-delay 0
 		  company-tooltip-offset-display 'scrollbar
 		  company-begin-commands '(self-insert-command))
-    (eval-after-load 'company
-      '(add-to-list 'company-backends
-		    '(company-abbrev company-yasnippet company-capf))))
+	(eval-after-load 'company
+	  '(add-to-list 'company-backends
+			'(company-abbrev company-yasnippet company-capf))))
 
   ;; better sorting and filtering
   (use-package company-prescient
-    :ensure t
-    :init (company-prescient-mode 1))
+	:ensure t
+	:init (company-prescient-mode 1))
 
   (use-package company-prescient
-    :ensure t
-    :init (company-prescient-mode 1))
+	:ensure t
+	:init (company-prescient-mode 1))
 #+end_src
 
 ** Editing
@@ -386,14 +391,14 @@ Instead of ivy/counsel/swiper.
 ** LSP
 #+begin_src emacs-lisp
   (use-package lsp-mode
-    :ensure t
-    :commands (lsp lsp-deferred)
-    :hook ((lsp-mode . lsp-enable-which-key-integrateion)
+	:ensure t
+	:commands (lsp lsp-deferred)
+	:hook ((lsp-mode . lsp-enable-which-key-integrateion)
 	   (prog-mode . (lambda ()
 			  (unless (derived-mode-p 'emacs-lisp-mode 'lsp-mode)
-			    (lsp-deferred)))))
-    :init
-    (setq lsp-keepspace-alive nil
+				(lsp-deferred)))))
+	:init
+	(setq lsp-keepspace-alive nil
 	  lsp-enable-indentation t
 	  lsp-auto-guess-root t
 	  lsp-enable-snippet t
@@ -403,49 +408,55 @@ Instead of ivy/counsel/swiper.
 	  lsp-prefer-capf t
 	  lsp-completion-provider :capf
 	  lsp-idle-delay 0.5
-	  read-process-output-max (* 1024 1024)))
+	  read-process-output-max (* 1024 1024)
+	  lsp-rust-analyzer-cargo-watch-command "clippy"
+	  lsp-eldoc-render-all t
+	  lsp-rust-analyzer-server-display-inlay-hints t))
 
   (use-package lsp-ui
-    :ensure t
-    :after lsp-mode
-    :commands lsp-ui-mode
-    :hook ((lsp-mode . lsp-ui-mode))
-    :init
-    (setq
-     ;; https://github.com/emacs-lsp/lsp-ui
-     lsp-ui-sideline-show-diagnostics t
-     lsp-ui-sideline-show-hover t
-     lsp-ui-sideline-show-code-actions t
-     lsp-ui-sideline-delay 1
-     lsp-ui-peek-enable t
-     lsp-ui-doc-enable t
-     lsp-ui-doc-delay 0.5
-     lsp-ui-doc-position 'at-point
-     lsp-ui-imenu-enable t
-     lsp-ui-imenu-kind-posiont 'top
-     lsp-ui-imenu-buffer-postion 'right
-     lsp-ui-imenu-auto-refresh t)
-    :config
-    (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
-    (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
-    :bind
-    (("C-c m" . 'lsp-ui-imenu))
-    )
+	:ensure t
+	:after lsp-mode
+	:commands lsp-ui-mode
+	:hook ((lsp-mode . lsp-ui-mode))
+	:init
+	(setq
+	 ;; https://github.com/emacs-lsp/lsp-ui
+	 lsp-ui-sideline-show-diagnostics t
+	 lsp-ui-sideline-show-hover t
+	 lsp-ui-sideline-show-code-actions t
+	 lsp-ui-sideline-delay 1
+	 lsp-ui-peek-always-show t
+	 lsp-ui-peek-enable t
+	 lsp-ui-doc-enable t
+	 lsp-ui-doc-delay 0.5
+	 lsp-ui-doc-position 'at-point
+	 lsp-ui-imenu-enable t
+	 lsp-ui-imenu-kind-posiont 'top
+	 lsp-ui-imenu-buffer-postion 'right
+	 lsp-ui-imenu-auto-refresh t)
+	:config
+	(define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
+	(define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
+	:bind
+	(("C-c m" . 'lsp-ui-imenu))
+	)
 
   (use-package lsp-ivy
-      :ensure t
-      :commands lsp-ivy-workspace-symbol
-      :bind
-      (("C-c s" . 'lsp-ivy-workspace-symbol)))
+	  :ensure t
+	  :commands lsp-ivy-workspace-symbol
+	  :bind
+	  (("C-c s" . 'lsp-ivy-workspace-symbol)))
 
   (use-package lsp-treemacs
-    :ensure t
-    :commands lsp-treemacs-errors-list
-    :init
-    (when (display-graphic-p)
-      (treemacs-resize-icons 14))
-    :bind
-    (("C-c e" . 'lsp-treemacs-errors-list)))
+	:ensure t
+	:commands lsp-treemacs-errors-list
+	:init
+	(when (display-graphic-p)
+	  (treemacs-resize-icons 14))
+	:bind
+	(("C-c e" . 'lsp-treemacs-errors-list)))
+
+  (setq lsp-auto-guess-root nil)
 #+end_src
 
 ** Treemacs
@@ -552,23 +563,22 @@ Advanced dired-mode.
 ** Coq
 #+begin_src emacs-lisp
   (use-package proof-general
-    :ensure t
-    :init
-    (setq proof-splash-seen t)
-    (require 'lsp-mode)
-    (add-to-list 'lsp-language-id-configuration '(coq-mode . "coq"))
-    (setq lsp-warn-no-matched-clients nil)
-    :hook
-    (coq-mode . undo-tree-mode))
+	:ensure t
+	:init
+	(setq proof-splash-seen t)
+	(require 'lsp-mode)
+	(add-to-list 'lsp-language-id-configuration '(coq-mode . "coq"))
+	(setq lsp-warn-no-matched-clients nil)
+	:hook
+	((coq-mode . undo-tree-mode)
+	 (coq-mode . (lambda ()
+			   (define-key coq-mode-map (kbd "C-c a") 'coq-Search)
+			   (define-key coq-mode-map (kbd "s-<return>") 'proof-goto-point)))))
 
   (use-package company-coq
-    :ensure t
-    :init (add-hook 'coq-mode-hook #'company-coq-mode))
+	:ensure t
+	:init (add-hook 'coq-mode-hook #'company-coq-mode))
 
-  ;; there is no coq-mode-map before activating coq-mode
-  (add-hook 'coq-mode-hook (lambda ()
-			    (define-key coq-mode-map (kbd "C-c a") 'coq-Search)
-			    (define-key coq-mode-map (kbd "s-<return>") 'proof-goto-point)))
 #+end_src
 
 ** Haskell
@@ -593,12 +603,20 @@ Advanced dired-mode.
 ** Go
 #+begin_src emacs-lisp
   (use-package go-mode
-    :ensure t
-    :init
-    (add-hook 'go-mode-hook #'lsp)
-    (add-hook 'go-mode-hook
+	:ensure t
+	:config
+	(add-hook 'go-mode-hook #'lsp)
+	(add-hook 'go-mode-hook
 	  (lambda ()
-	    (setq indent-tabs-mode 1)
-	    (setq tab-width 4))))
+		(setq indent-tabs-mode 1)
+		(setq tab-width 4))))
+#+end_src
+
+** Rust
+#+begin_src emacs-lisp
+  (use-package rustic
+	:ensure t
+	:config
+	(setq rustic-format-on-save t))
 #+end_src
 
