@@ -348,9 +348,13 @@ Instead of ivy/counsel/swiper.
 	:ensure t
 	:init (company-prescient-mode 1))
 
-  (use-package company-prescient
+  (use-package company-box
 	:ensure t
-	:init (company-prescient-mode 1))
+	:bind (:map company-active-map
+				([remap company-show-doc-buffer] . company-box-doc-manually))
+	:hook (company-mode . company-box-mode)
+	:init (setq company-box-backends-colors nil
+				company-box-doc-delay 0.1))
 #+end_src
 
 ** Editing
