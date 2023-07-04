@@ -35,7 +35,7 @@ Do not show the startup screen and tool bar. Make the Emacs GUI window maximized
   (delete-selection-mode 1)
 
   (global-set-key (kbd "S-<f5>") 'restart-emacs)
-  (global-set-key (kbd "M-.") 'set-mark-command)
+  (global-set-key (kbd "C-.") 'set-mark-command)
 
   (setq-default tab-width 4)
 
@@ -182,9 +182,13 @@ Set colorscheme:
 
 ** Wakatime
 #+begin_src emacs-lisp
-  (use-package wakatime-mode
-    :ensure t
-    :init (global-wakatime-mode))
+  (if (check-command-available? "wakatime-cli")
+	  (progn
+		(use-package wakatime-mode
+		  :ensure t
+		  :init (global-wakatime-mode))
+
+		(zero/debug "loaded wakatime mode" "tool")))
 #+end_src
 
 ** Keycast
