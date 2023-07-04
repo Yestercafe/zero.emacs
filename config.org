@@ -38,11 +38,25 @@ Do not show the startup screen and tool bar. Make the Emacs GUI window maximized
   (global-set-key (kbd "M-.") 'set-mark-command)
 
   (setq-default tab-width 4)
+
+  ;; zero.emacs debugging flag
+  (setq zero/*debug-flag* t)
 #+end_src
 
 * Utils
 #+begin_src emacs-lisp
   (defconst *mac* (eq system-type 'darwin))
+
+  (defun get-command-path (command)
+	(string-trim (shell-command-to-string (concat "command -v " command))))
+
+  (defun check-command-available? (command)
+	(not (string-empty-p (get-command-path command))))
+
+  (defun zero/debug (msg part)
+	(if zero/*debug-flag*
+		(message (concat "[zero] " part ": " msg))
+	  nil))
 #+end_src
 
 * Emacs Client
@@ -512,79 +526,98 @@ Project manager. Incomplete.
 Advanced dired-mode.
 #+begin_src emacs-lisp
   (use-package all-the-icons
-    :ensure t)
+	:ensure t)
   (use-package all-the-icons-dired
-    :ensure t
-    :init
-    (when *mac*
-      (setq dired-use-ls-dired t
-	    insert-directory-program "/usr/local/bin/gls"
-	    dired-listing-switches "-aBhl --group-directories-first"))
-    (setq all-the-icons-dired-monochrome nil)
-    (add-hook 'dired-mode-hook 'all-the-icons-dired-mode))
+	:ensure t
+	:init
+	(when (and *mac* (check-command-available? "gls"))
+	  (setq dired-use-ls-dired t
+		insert-directory-program (get-command-path "gls")
+		dired-listing-switches "-aBhl --group-directories-first"))
+	(setq all-the-icons-dired-monochrome nil)
+	(add-hook 'dired-mode-hook 'all-the-icons-dired-mode))
 #+end_src
 
 * Languages
 ** Coq
 #+begin_src emacs-lisp
-  (use-package proof-general
-	:ensure t
-	:init
-	(setq proof-splash-seen t)
-	(require 'lsp-mode)
-	(add-to-list 'lsp-language-id-configuration '(coq-mode . "coq"))
-	(setq lsp-warn-no-matched-clients nil)
-	:hook
-	((coq-mode . undo-tree-mode)
-	 (coq-mode . (lambda ()
-			   (define-key coq-mode-map (kbd "C-c a") 'coq-Search)
-			   (define-key coq-mode-map (kbd "s-<return>") 'proof-goto-point)))))
+  (if (check-command-available? "coqtop")
+	  (progn
+		(use-package proof-general
+		  :ensure t
+		  :init
+		  (setq proof-splash-seen t)
+		  (require 'lsp-mode)
+		  (add-to-list 'lsp-language-id-configuration '(coq-mode . "coq"))
+		  (setq lsp-warn-no-matched-clients nil)
+		  :hook
+		  ((coq-mode . undo-tree-mode)
+		   (coq-mode . (lambda ()
+						 (define-key coq-mode-map (kbd "C-c a") 'coq-Search)
+						 (define-key coq-mode-map (kbd "s-<return>") 'proof-goto-point)))))
 
-  (use-package company-coq
-	:ensure t
-	:init (add-hook 'coq-mode-hook #'company-coq-mode)
-	:config
-	(setq company-box-doc-enable nil))
+		(use-package company-coq
+		  :ensure t
+		  :init (add-hook 'coq-mode-hook #'company-coq-mode)
+		  :config
+		  (setq company-box-doc-enable nil))
+
+		(zero/debug "found `coqtop`, loaded Coq part" "lang")))
 #+end_src
 
 ** Haskell
 #+begin_src emacs-lisp
-  (use-package haskell-mode
-    :ensure t)
+  (if (check-command-available? "ghc")
+	  (progn
+		(use-package haskell-mode
+		  :ensure t)
 
-  (use-package lsp-haskell
-    :ensure t
-    :after (lsp-mode)
-    :init
-    (add-hook 'haskell-mode-hook #'lsp)
-    (add-hook 'haskell-literate-mode-hook #'lsp))
+		(use-package lsp-haskell
+		  :ensure t
+		  :after (lsp-mode)
+		  :init
+		  (add-hook 'haskell-mode-hook #'lsp)
+		  (add-hook 'haskell-literate-mode-hook #'lsp))
+  
+		(zero/debug "found `ghc`, loaded Haskell part" "lang")))
 #+end_src
 
 ** Agda
 #+begin_src emacs-lisp
-  (if (string-match "Agda version" (shell-command-to-string "agda-mode"))
-	  (progn (load-file (let ((coding-system-for-read 'utf-8))
-						  (shell-command-to-string "agda-mode locate")))
-			 (add-to-list 'auto-mode-alist '("\\.lagda.md\\'" . agda2-mode))))
+  (if (and (check-command-available? "agda") (check-command-available? "agda-mode"))
+	  (progn
+		(load-file (let ((coding-system-for-read 'utf-8))
+					 (shell-command-to-string "agda-mode locate")))
+		(add-to-list 'auto-mode-alist '("\\.lagda.md\\'" . agda2-mode))
+
+		(zero/debug "found `agda` and `agda-mode`, loaded Agda part" "lang")))
 #+end_src
 
 ** Go
 #+begin_src emacs-lisp
-  (use-package go-mode
-	:ensure t
-	:config
-	(add-hook 'go-mode-hook #'lsp)
-	(add-hook 'go-mode-hook
-	  (lambda ()
-		(setq indent-tabs-mode 1)
-		(setq tab-width 4))))
+  (if (check-command-available? "go")
+	  (progn
+		(use-package go-mode
+		  :ensure t
+		  :config
+		  (add-hook 'go-mode-hook #'lsp)
+		  (add-hook 'go-mode-hook
+					(lambda ()
+					  (setq indent-tabs-mode 1)
+					  (setq tab-width 4))))
+
+		(zero/debug "found `go`, loaded Go part" "lang")))
 #+end_src
 
 ** Rust
 #+begin_src emacs-lisp
-  (use-package rustic
-	:ensure t
-	:config
-	(setq rustic-format-on-save t))
+  (if (check-command-available? "cargo")
+	  (progn
+		(use-package rustic
+		  :ensure t
+		  :config
+		  (setq rustic-format-on-save t))
+
+		(zero/debug "found `cargo`, loaded Rust part" "lang")))
 #+end_src
 
