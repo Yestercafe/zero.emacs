@@ -120,11 +120,18 @@ Do not show the startup screen and tool bar. Make the Emacs GUI window maximized
   (use-package list-utils
 	:ensure t)
 
-  (set-face-attribute 'default nil
-					  :family "SFMono Nerd Font"
-					  :height 140)
-  (set-frame-font "SFMono Nerd Font-14")
-  (setq default-frame-alist '((font . "SFMono Nerd Font-14")))
+  (if *mac*
+	  (set-face-attribute 'default nil
+						  :family "SFMono Nerd Font"
+						  :height 140)
+	(set-face-attribute 'default nil
+						:family "SFMono Nerd Font"
+						:height 120))
+
+  ;; --- deprecated ---
+  ;; (set-frame-font "SFMono Nerd Font-14")
+  ;; (setq default-frame-alist '((font . "SFMono Nerd Font-14")))
+
   (when *mac*
 	(setq default-frame-alist '((ns-transparent-titlebar . t))))
 
