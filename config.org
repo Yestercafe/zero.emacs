@@ -562,8 +562,10 @@ Advanced dired-mode.
 
 ** Agda
 #+begin_src emacs-lisp
-  (load-file (let ((coding-system-for-read 'utf-8))
-	       (shell-command-to-string "agda-mode locate")))
+  (if (string-match "Agda version" (shell-command-to-string "agda-mode"))
+	  (progn (load-file (let ((coding-system-for-read 'utf-8))
+						  (shell-command-to-string "agda-mode locate")))
+			 (add-to-list 'auto-mode-alist '("\\.lagda.md\\'" . agda2-mode))))
 #+end_src
 
 ** Go
