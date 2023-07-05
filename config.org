@@ -542,6 +542,11 @@ Project manager. Incomplete.
 *** keymaps
 #+begin_src emacs-lisp
   (define-key org-mode-map (kbd "C-c a") 'org-agenda)
+
+  (use-package org-modern
+	:ensure t
+	:hook ((org-mode . org-modern-mode)
+		   (org-agenda-finalize . org-modern-agenda)))
 #+end_src
 
 ** dired-mode
