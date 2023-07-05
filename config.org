@@ -12,9 +12,9 @@ Do not show the startup screen and tool bar. Make the Emacs GUI window maximized
 #+begin_src emacs-lisp
   ;; no backup files
   (setq make-backup-files nil
-	backup-inhibited t
-	auto-save-default nil
-	auto-save-list-file-prefix nil)
+    backup-inhibited t
+    auto-save-default nil
+    auto-save-list-file-prefix nil)
   ;; switch yes/no options to y/n options
   (fset 'yes-or-no-p 'y-or-n-p)
   ;; no bell
@@ -24,6 +24,7 @@ Do not show the startup screen and tool bar. Make the Emacs GUI window maximized
   (global-hl-line-mode 1)
 
   ;; show relative line number
+  (setq display-line-numbers-width-start t)
   (setq display-line-numbers-type 'relative)
   (global-display-line-numbers-mode)
 
