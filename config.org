@@ -12,9 +12,9 @@ Do not show the startup screen and tool bar. Make the Emacs GUI window maximized
 #+begin_src emacs-lisp
   ;; no backup files
   (setq make-backup-files nil
-    backup-inhibited t
-    auto-save-default nil
-    auto-save-list-file-prefix nil)
+	backup-inhibited t
+	auto-save-default nil
+	auto-save-list-file-prefix nil)
   ;; switch yes/no options to y/n options
   (fset 'yes-or-no-p 'y-or-n-p)
   ;; no bell
@@ -42,6 +42,10 @@ Do not show the startup screen and tool bar. Make the Emacs GUI window maximized
 
   ;; zero.emacs debugging flag
   (setq zero/*debug-flag* t)
+
+  ;; bind resizing frame window
+  (global-set-key (kbd "C-x w m") 'toggle-frame-maximized)
+  (global-set-key (kbd "C-x w f") 'toggle-frame-fullscreen)
 #+end_src
 
 * Utils
