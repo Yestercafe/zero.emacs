@@ -548,6 +548,9 @@ Project manager. Incomplete.
 	:ensure t
 	:hook ((org-mode . org-modern-mode)
 		   (org-agenda-finalize . org-modern-agenda)))
+
+  (add-hook 'org-mode-hook (lambda ()
+							 (display-line-numbers-mode -1)))
 #+end_src
 
 ** dired-mode
@@ -560,10 +563,13 @@ Advanced dired-mode.
 	:init
 	(when (and *mac* (check-command-available? "gls"))
 	  (setq dired-use-ls-dired t
-		insert-directory-program (get-command-path "gls")
-		dired-listing-switches "-aBhl --group-directories-first"))
+			insert-directory-program (get-command-path "gls")
+			dired-listing-switches "-aBhl --group-directories-first"))
 	(setq all-the-icons-dired-monochrome nil)
 	(add-hook 'dired-mode-hook 'all-the-icons-dired-mode))
+
+  (add-hook 'dired-mode-hook (lambda ()
+							   (display-line-numbers-mode -1)))
 #+end_src
 
 * Languages
