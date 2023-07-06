@@ -164,6 +164,28 @@ Do not show the startup screen and tool bar. Make the Emacs GUI window maximized
 	  (remove-hook 'after-make-frame-functions 'unicode-fonts-setup-h)
 	  ))
   (add-hook 'after-make-frame-functions 'unicode-fonts-setup-h nil)
+
+  ;; prettify symbols
+  (add-hook 'prog-mode-hook #'prettify-symbols-mode)
+  (setq-default prettify-symbols-alist '(("lambda" . ?λ)
+										 ("<-"     . ?←)
+										 ("->"     . ?→)
+										 ("->>"    . ?↠)
+										 ("=>"     . ?⇒)
+										 ("map"    . ?↦)
+										 ("/="     . ?≠)
+										 ("!="     . ?≠)
+										 ("=="     . ?≡)
+										 ("<="     . ?≤)
+										 (">="     . ?≥)
+										 ("=<<"    . (?= (Br . Bl) ?≪))
+										 (">>="    . (?≫ (Br . Bl) ?=))
+										 ("<=<"    . ?↢)
+										 (">=>"    . ?↣)
+										 ("&&"     . ?∧)
+										 ("||"     . ?∨)
+										 ("not"    . ?¬)))
+  (setq prettify-symbols-unprettify-at-point 'right-edge)
 #+end_src
 
 ** Theme
