@@ -51,9 +51,14 @@ Do not show the startup screen and tool bar. Make the Emacs GUI window maximized
 * Utils
 #+begin_src emacs-lisp
   (defconst *mac* (eq system-type 'darwin))
+  (defconst *win* (eq system-type 'windows-nt))
 
   (defun get-command-path (command)
-	(string-trim (shell-command-to-string (concat "command -v " command))))
+	(if (not *win*)
+		(string-trim (shell-command-to-string (concat "command -v " command)))
+	  (if (string-prefix-p "INFO" (shell-command-to-string (concat "where " command)))
+		  ""
+		"[exists]")))
 
   (defun check-command-available? (command)
 	(not (string-empty-p (get-command-path command))))
@@ -62,15 +67,6 @@ Do not show the startup screen and tool bar. Make the Emacs GUI window maximized
 	(if zero/*debug-flag*
 		(message (concat "[zero] " part ": " msg))
 	  nil))
-
-  (when *mac*
-	(progn
-	  (use-package osx-trash
-		:ensure t
-		:custom
-		(delete-by-moving-to-trash t)
-		:config
-		(osx-trash-setup))))
 #+end_src
 
 * Emacs Client
@@ -106,6 +102,12 @@ Do not show the startup screen and tool bar. Make the Emacs GUI window maximized
     (package-initialize))
 #+end_src
 
+** Fix GNUPG path for Windows
+#+begin_src emacs-lisp
+  (when *win*
+	  (setq package-gnupghome-dir "~/.epla-gnupg"))
+#+end_src
+
 ** Install use-package
 #+begin_src emacs-lisp
   (unless (package-installed-p 'use-package)
@@ -129,12 +131,12 @@ Do not show the startup screen and tool bar. Make the Emacs GUI window maximized
 ** System PATH
 #+begin_src emacs-lisp
   (use-package exec-path-from-shell
-    :ensure t)
+	:ensure t)
   (when (memq window-system '(mac ns x))
-    (exec-path-from-shell-initialize))
+	(exec-path-from-shell-initialize))
   (when (daemonp)
-    (exec-path-from-shell-initialize)
-    (scroll-bar-mode -1))
+	(exec-path-from-shell-initialize)
+	(scroll-bar-mode -1))
 #+end_src
 
 ** Fonts
@@ -146,13 +148,15 @@ Do not show the startup screen and tool bar. Make the Emacs GUI window maximized
   (use-package list-utils
 	:ensure t)
 
-  (if *mac*
-	  (set-face-attribute 'default nil
-						  :family "SFMono Nerd Font"
-						  :height 140)
-	(set-face-attribute 'default nil
-						:family "SFMono Nerd Font"
-						:height 120))
+  (cond (*mac* (set-face-attribute 'default nil
+								   :family "SF Mono"
+								   :height 140))
+		(*win* (set-face-attribute 'default nil
+								   :family "Cascadia Code"
+								   :height 120))
+		(t (set-face-attribute 'default nil
+							   :family "Fira Code"
+							   :height 120)))
 
   ;; --- deprecated ---
   ;; (set-frame-font "SFMono Nerd Font-14")
@@ -226,6 +230,18 @@ Set colorscheme:
 
   (global-set-key (kbd "C-c t t") 'toggle-light)
   (light-off)
+#+end_src
+
+** macOS trash bin
+#+begin_src emacs-lisp
+  (when *mac*
+	(progn
+	  (use-package osx-trash
+		:ensure t
+		:custom
+		(delete-by-moving-to-trash t)
+		:config
+		(osx-trash-setup))))
 #+end_src
 
 ** Wakatime
@@ -549,16 +565,18 @@ Code formatter while saving.
 
 ** Vterm toggle
 #+begin_src emacs-lisp
-  (use-package vterm-toggle
-    :ensure t
-    :bind
-    (("<f1>" . 'vterm-toggle)
-     :map vterm-mode-map
-     ("<f1>" . 'vterm-toggle)
-     ("C-<f1>" . 'vterm-toggle-cd))
-    :init
-    (add-hook 'vterm-mode-hook (lambda ()
-				 (display-line-numbers-mode -1))))
+  (when (not *win*)
+	(progn
+	  (use-package vterm-toggle
+		:ensure t
+		:bind
+		(("<f1>" . 'vterm-toggle)
+		 :map vterm-mode-map
+		 ("<f1>" . 'vterm-toggle)
+		 ("C-<f1>" . 'vterm-toggle-cd))
+		:init
+		(add-hook 'vterm-mode-hook (lambda ()
+									 (display-line-numbers-mode -1))))))
 #+end_src
 
 ** Projectile

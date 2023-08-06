@@ -9,6 +9,13 @@
 
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 
+(when (eq system-type 'windows-nt)
+  (progn
+	(set-language-environment "UTF-8")
+	(set-default-coding-systems 'utf-8)
+	(set-keyboard-coding-system 'utf-8-unix)
+	(set-terminal-coding-system 'utf-8-unix)))
+
 (require 'org)
 (org-babel-load-file
  (expand-file-name "config.org"
