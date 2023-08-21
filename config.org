@@ -56,9 +56,7 @@ Do not show the startup screen and tool bar. Make the Emacs GUI window maximized
   (defun get-command-path (command)
 	(if (not *win*)
 		(string-trim (shell-command-to-string (concat "command -v " command)))
-	  (if (string-prefix-p "INFO" (shell-command-to-string (concat "where " command)))
-		  ""
-		"[exists]")))
+	  (string-trim (shell-command-to-string (concat "where " command " 2>nul")))))
 
   (defun check-command-available? (command)
 	(not (string-empty-p (get-command-path command))))
@@ -225,8 +223,8 @@ Set colorscheme:
   (defun toggle-light ()
 	(interactive)
 	(if (> light-on-or-off 0)
-	(light-off)
-	(light-on)))
+		(light-off)
+	  (light-on)))
 
   (global-set-key (kbd "C-c t t") 'toggle-light)
   (light-off)
@@ -246,12 +244,16 @@ Set colorscheme:
 
 ** Wakatime
 #+begin_src emacs-lisp
-  (if (check-command-available? "wakatime-cli")
+  (if (or (check-command-available? "wakatime-cli")
+		  (and (not *win*) (file-exists-p "~/.wakatime/wakatime-cli"))
+		  (and *win* (file-exists-p "~/.wakatime/wakatime-cli.exe")))
 	  (progn
 		(use-package wakatime-mode
 		  :ensure t
 		  :init (global-wakatime-mode))
-
+		(if *win*
+			(setq wakatime-cli-path "%HOME%\\.wakatime\\wakatime-cli.exe"))
+	  
 		(zero/debug "loaded wakatime mode" "tool")))
 #+end_src
 
