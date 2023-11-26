@@ -60,8 +60,6 @@
 				       ("not"    . ?¬)))
 (setq prettify-symbols-unprettify-at-point 'right-edge)
 
-(load-theme 'doom-tomorrow-night 1)
-
 (use-package doom-themes
   :ensure t
   :config
@@ -117,5 +115,7 @@
 		doom-modeline-indent-info t
 		doom-modeline-battery t
 		doom-modeline-env-version t))
+
+(load-theme 'doom-tomorrow-night 1)
 
 (provide 'init-face)
