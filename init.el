@@ -5,6 +5,9 @@
 (setq mac-option-modifier 'meta
       mac-command-modifier 'super)
 
+(add-to-list 'custom-theme-load-path
+             "~/.emacs.d/3rdparty/gruber-darker-theme")
+
 (setq make-backup-files nil)
 (setq auto-save-default nil)
 
@@ -137,7 +140,9 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(column-number-mode t)
- '(custom-enabled-themes '(leuven-dark))
+ '(custom-enabled-themes '(gruber-darker))
+ '(custom-safe-themes
+   '("e27c9668d7eddf75373fa6b07475ae2d6892185f07ebed037eedf783318761d7" default))
  '(display-battery-mode t)
  '(display-line-numbers-type 'relative)
  '(global-display-line-numbers-mode t)
